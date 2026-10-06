@@ -68,8 +68,12 @@ export function StaffAttendanceTab() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleMatchConfirmed = async (match: { uuid: string }) => {
-    const response = await mark(match.uuid, 'PRESENT');
+  const handleMatchConfirmed = async (match: {
+    uuid: string;
+    status?: 'PRESENT' | 'ABSENT' | 'PENDING';
+  }) => {
+    const status = match.status ? match.status : 'PRESENT';
+    const response = await mark(match.uuid, status);
     if (response.success) {
       toast.success('Attendance marked');
       fetchLog();
@@ -181,26 +185,48 @@ export function StaffAttendanceTab() {
                     </Badge>
                   </TableCell>
                   <TableCell className='text-right'>
-                    <Select
-                      value={attendance?.status ?? 'PENDING'}
-                      onValueChange={(value) =>
-                        handleStatusChange(
-                          attendance?.uuid,
-                          value as 'PRESENT' | 'ABSENT' | 'PENDING',
-                        )
-                      }
-                      disabled={savingUuid === attendance?.uuid}
-                    >
-                      <SelectTrigger size='sm' className='w-28 ml-auto'>
-                        <Pencil className='h-3.5 w-3.5' />
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value='PRESENT'>Present</SelectItem>
-                        <SelectItem value='ABSENT'>Absent</SelectItem>
-                        <SelectItem value='PENDING'>Pending</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    {attendance ? (
+                      <Select
+                        value={attendance.status}
+                        onValueChange={(value) =>
+                          handleStatusChange(
+                            attendance.uuid,
+                            value as 'PRESENT' | 'ABSENT' | 'PENDING',
+                          )
+                        }
+                        disabled={savingUuid === attendance.uuid}
+                      >
+                        <SelectTrigger size='sm' className='w-28 ml-auto'>
+                          <Pencil className='h-3.5 w-3.5' />
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='PENDING'>Pending</SelectItem>
+                          <SelectItem value='PRESENT'>Present</SelectItem>
+                          <SelectItem value='ABSENT'>Absent</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Select
+                        value='PENDING'
+                        onValueChange={(value) =>
+                          handleMatchConfirmed({
+                            uuid: staff.uuid,
+                            status: value as 'PRESENT' | 'ABSENT' | 'PENDING',
+                          })
+                        }
+                      >
+                        <SelectTrigger size='sm' className='w-28 ml-auto'>
+                          <Pencil className='h-3.5 w-3.5' />
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='PENDING'>Pending</SelectItem>
+                          <SelectItem value='PRESENT'>Present</SelectItem>
+                          <SelectItem value='ABSENT'>Absent</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
                   </TableCell>
                 </TableRow>
               ))
