@@ -74,12 +74,12 @@ export class ClassesService {
     decoded: DecodedUser,
     body: any,
   ) {
-    const { name, capacity, teacher_uuid } = body;
-    const teachers_uuid = Array.isArray(body.teachers_uuid)
-      ? body.teachers_uuid.filter(Boolean)
+    const { name, capacity, teacher_uuid, teachers_uuid } = body;
+    const updated_teachers_uuid = Array.isArray(teachers_uuid)
+      ? teachers_uuid.filter(Boolean)
       : [];
-    if (teacher_uuid && !teachers_uuid.includes(teacher_uuid))
-      teachers_uuid.unshift(teacher_uuid);
+    if (teacher_uuid && !updated_teachers_uuid.includes(teacher_uuid))
+      updated_teachers_uuid.unshift(teacher_uuid);
 
     if (decoded.position !== 'ADMINISTRATIVE') {
       throw new BadRequestException({
@@ -147,12 +147,12 @@ export class ClassesService {
   }
 
   async update(uuid: string, decoded: DecodedUser, body: any) {
-    const { name, capacity, teacher_uuid } = body;
-    const teachers_uuid = Array.isArray(body.teachers_uuid)
-      ? body.teachers_uuid.filter(Boolean)
+    const { name, capacity, teacher_uuid, teachers_uuid } = body;
+    const updated_teachers_uuid = Array.isArray(teachers_uuid)
+      ? teachers_uuid.filter(Boolean)
       : [];
-    if (teacher_uuid && !teachers_uuid.includes(teacher_uuid))
-      teachers_uuid.unshift(teacher_uuid);
+    if (teacher_uuid && !updated_teachers_uuid.includes(teacher_uuid))
+      updated_teachers_uuid.unshift(teacher_uuid);
 
     if (decoded.position !== 'ADMINISTRATIVE') {
       throw new BadRequestException({
